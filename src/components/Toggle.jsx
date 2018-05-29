@@ -3,6 +3,8 @@ import Switch from "./Switch";
 
 class Toggle extends Component {
     
+    static defaultProps = {onToggle: () => {}}
+
     state = { on: false }
 
     toggle = () => this.setState(({on}) => ({on: !on}), () => {
