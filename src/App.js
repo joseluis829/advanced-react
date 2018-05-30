@@ -26,7 +26,7 @@ class App extends Component {
           <DataTabs data={data} />
         </div>
 
-        <Demo></Demo>
+        <Demo />
 
       </div>
     );

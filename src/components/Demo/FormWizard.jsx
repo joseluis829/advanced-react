@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Form, Label, Input, Button } from "semantic-ui-react";
 
-export class FormWizard extends Component {
+export class FormWizard extends React.Component {
 
     state = { activeStepIndex: 0 }
     
@@ -25,7 +25,7 @@ export class FormWizard extends Component {
 
     render() {
         const { activeStepIndex, totalSteps } = this.state
-        const children = React.children.map(this.props.children, child => {
+        const children = React.Children.map(this.props.children, child => {
             if(child.type.name === 'StepList') {
                 return React.cloneElement(child, {
                     activeStepIndex,
@@ -62,7 +62,7 @@ export class FormWizard extends Component {
 export class StepList extends React.Component {
     render () {
         const { activeStepIndex } = this.props
-        const children = React.children.map(this.props.children, (child, index) => {
+        const children = React.Children.map(this.props.children, (child, index) => {
             return React.cloneElement(child, {
                 isActive: index === activeStepIndex
             })
@@ -74,7 +74,7 @@ export class StepList extends React.Component {
 export class ButtonList extends React.Component {
     render() {
         const { activeStepIndex, totalSteps } = this.props
-        const children = React.children.map(this.props.children, (child, index) => {
+        const children = React.Children.map(this.props.children, (child, index) => {
             if (child.type.name === 'Previous') {
                 return React.cloneElement(child, {
                     isPreviousActive: activeStepIndex > 0 ? true : false,
