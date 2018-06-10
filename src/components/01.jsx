@@ -15,7 +15,7 @@ export class Toggle extends React.Component {
     }
 
     render() {
-        return <Switch on={this.state.on} onClick={this.toogle} />
+        return <Switch on={this.state.on} onClick={this.toggle} />
     }
 }
 
