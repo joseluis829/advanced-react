@@ -22,20 +22,18 @@ class Toggle extends React.Component {
     }
 
     render() {
-        return React.Children.map(this.props.children, (child) => 
-            React.cloneElement(child, {
+        return React.Children.map(this.props.children, childElement => 
+            React.cloneElement(childElement, {
                 on: this.state.on,
-                toggle: this.toggle,
-            })
-        )
+                toggle: this.toggle.
+            )
+        })
     }
 }
 
 function Usage({
     onToggle = (...args) => console.log('onToggle', ...args), 
 }) {
-    console.log(onToggle);
-    
     return (
         <Toggle onToggle={onToggle} >
             <Toggle.On>The button is on</Toggle.On>
