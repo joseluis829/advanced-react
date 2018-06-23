@@ -25,9 +25,9 @@ class Toggle extends React.Component {
         return React.Children.map(this.props.children, childElement => 
             React.cloneElement(childElement, {
                 on: this.state.on,
-                toggle: this.toggle.
-            )
-        })
+                toggle: this.toggle,
+            })
+        )
     }
 }
 
