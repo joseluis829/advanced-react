@@ -12,6 +12,10 @@ class Toggle extends React.Component {
         return {
             on: this.state.on,
             toggle: this.toggle,
+            togglerProps: {
+                onClick: this.toggle,
+                'aria-pressed': this.state.on,
+            }
         }
     }
     render() {
