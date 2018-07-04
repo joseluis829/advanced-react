@@ -1,17 +1,7 @@
 import React from "react";
 import { Switch } from "../components/switch";
 
-//const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
-const callAll = (...fns) => {
-    console.log('fns: ', fns); 
-    return () => { 
-        //console.log('args1: ', args); 
-        fns.forEach(fn => {
-            fn && fn(); 
-            //console.log('args2: ', args); 
-        }) 
-    }
-}
+const callAll = (...fns) => (...args) => fns.forEach(fn => fn && fn(...args))
 
 class Toggle extends React.Component {
 
@@ -23,25 +13,28 @@ class Toggle extends React.Component {
     initialState = { on: this.props.initialOn }
     state = this.initialState
 
+    internalSetState(changes, callback) {
+        this.setState(state => {
+            const changesObject = typeof changes === 'function' ? changes(state) : changes
+            const reducedChanges = this.props.stateReducer(state, changesObject)
+            return reducedChanges
+        }, callback)
+    }
+
+    reset = () => {
+        this.internalSetState(this.initialState, () => this.props.onReset(this.state.on) )
+    }
+
     toggle = () =>
-        this.setState(
+        this.internalSetState(
             ({on}) => ({on: !on}),
             () => this.props.onToggle(this.state.on),
         )
 
-    printInScreen = (text) => {
-        console.log('show this text: ', text);
-        
-    }
-    
-    reset = () => 
-        this.setState(this.initialState, () => this.props.onReset(this.state.on))    
-
     getTogglerProps = ({onClick, ...props} = {}) => {
         return {
             'aria-pressed': this.state.on,
-            onClick: callAll(onClick, this.toggle, this.printInScreen(this.state.on), 
-                this.printInScreen('newtext ' + !this.state.on)),
+            onClick: callAll(onClick, this.toggle),
             ...props,
         }
     }
@@ -62,27 +55,60 @@ class Toggle extends React.Component {
     }
 }
 
-function Usage({
-    initialOn = true,
-    onToggle = (...args) => console.log('onToggle', ...args),
-    onReset = (...args) => console.log('onReset', ...args),
-}) {
-    return (
-        <Toggle 
-            initialOn={initialOn}
-            onToggle={onToggle}
-            onReset={onReset}
-        >
-            {({getTogglerProps, on, reset}) => (
-                <div>
-                    <Switch {...getTogglerProps({on})} />
-                    <hr />
-                    <button onClick={reset}>Reset</button>
-                    <hr />
-                </div>
-            )}
-        </Toggle>
-    )
+class Usage extends React.Component {
+    initialState = {timesClicked: 0}
+    state = this.initialState
+
+    handleToggle = (...args) => {
+        this.setState((({timesClicked}) => ({
+            timesClicked: timesClicked + 1,
+        })))
+    }
+
+    handleReset = (...args) => {
+        this.setState(this.initialState)
+    }
+
+    toggleStateReducer = (state, changes) => {
+        if(this.state.timesClicked > 4) {
+            return {...changes, on: false}
+        }
+        return changes
+    }
+
+    render() {
+        const {timesClicked} = this.state
+        return (
+            <Toggle 
+                stateReducer={this.toggleStateReducer}
+                onToggle={this.handleToggle}
+                onReset={this.handleReset}
+            >
+                {({getTogglerProps, reset, toggle, on}) => (
+                    <div>
+                        <Switch 
+                            {...getTogglerProps({
+                                on,
+                            })}
+                        />
+                        {
+                            timesClicked > 4 ? (
+                                <div>
+                                    Whoa, you clicked too much!
+                                    <br />
+                                </div>
+                            ) : timesClicked > 0 ? (
+                                <div>Click count: {timesClicked}</div>
+                            ) : null
+                        }
+                        <button onClick={reset}>Reset</button>
+                    </div>
+                )}
+            </Toggle>
+        )
+    }
+
 }
 
-export default Usage
+Usage.title = 'State Reducers'
+export {Toggle, Usage as default}

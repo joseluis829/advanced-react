@@ -22,8 +22,8 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         {/*<Toggle onToggle={onToggle} />*/}
-        {Usage({onToggle})}
-
+        {/*Usage({onToggle})*/}
+        <Usage/>
 
       </div>
     );
