@@ -9,6 +9,7 @@ class Toggle extends React.Component {
             () => this.props.onToggle(this.state.on),
         )
     getStateAndHelpers() {
+
         return {
             on: this.state.on,
             toggle: this.toggle,
@@ -25,18 +26,30 @@ class Toggle extends React.Component {
     }
 }
 
+const showOnConsole = ({name, surname}, newName) => {
+    console.log('name', name)
+    console.log('surname', surname);
+    console.log('newName', newName);
+    
+}
+
 function Usage({
     onToggle = (...args) => console.log('onToggle', ...args),
 }) {
+    const object = {name: 'jose', surname: 'cullcay'}
+    const newName = 'luis'
+    showOnConsole(object, newName)
     return (
         <Toggle onToggle={onToggle}>
-            {({on, togglerProps}) => (
+            {({on, toggle, togglerProps}) => (
                 <div>
                     <Switch on={on} {...togglerProps} />
                     <hr />
                     <button aria-label="custom-button" {...togglerProps}>
                         {on ? 'on' : 'off'}
                     </button>
+                    <hr />
+                    <span style={{cursor: 'pointer'}} onClick={toggle} >click me</span>
                 </div>
             )}
         </Toggle>
