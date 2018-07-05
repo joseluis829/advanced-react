@@ -112,3 +112,14 @@ class Usage extends React.Component {
 
 Usage.title = 'State Reducers'
 export {Toggle, Usage as default}
+
+/**
+ * Implement Component State Reducers
+ */
+
+ /**
+  * Often with reusable components, the logic needs to be adjusted to handle various use cases. 
+  * Rather than filling our component event handlers with if statements and loading our state with one-off properties, 
+  * we can expose our state directly to users of our reusable component 
+  * in a way that's flexible and simple with a state reducer.
+  */
