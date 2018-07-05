@@ -11,6 +11,11 @@ class Toggle extends React.Component {
         stateReducer: (state, changes) => changes,
     }
 
+    static stateChangeTypes = {
+        reset: '__reset__',
+        toggle: '__toggle__',
+    }
+
     initialState = { on: this.props.initialOn }
     state = this.initialState
 
@@ -20,17 +25,20 @@ class Toggle extends React.Component {
             const changesObject = typeof changes === 'function' ? changes(state) : changes
             // apply state reducer
             const reducedChanges = this.props.stateReducer(state, changesObject)
-            return reducedChanges
+
+            const {type: ignoredType, ...onlyChanges} = reducedChanges
+
+            return onlyChanges
         }, callback)
     }
 
     reset = () => {
-        this.internalSetState({...this.initialState, type: 'reset'}, () => 
+        this.internalSetState({...this.initialState, type: Toggle.stateChangeTypes.reset}, () => 
             this.props.onReset(this.state.on) 
         )
     }
 
-    toggle = ({type = 'toggle'} = {}) =>
+    toggle = ({type = Toggle.stateChangeTypes.toggle} = {}) =>
         this.internalSetState(
             ({on}) => ({on: !on, type}),
             () => this.props.onToggle(this.state.on),
