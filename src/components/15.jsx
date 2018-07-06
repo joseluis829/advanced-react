@@ -13,14 +13,24 @@ class Toggle extends React.Component {
     }
 
     getState(state = this.state) {
+
+
         return Object.entries(state).reduce(
+            
             //Addition function (AccumulatorValue, currentValue)
             (combinedState, [key, value]) => {
+                console.log('----')
+                console.log('state', state)
+                console.log('combinedState', combinedState);
+                console.log('[key, value]', [key, value]);
                 if(this.isControlled(key)) {
                     combinedState[key] = this.props[key]
                 } else {
                     combinedState[key] = value
                 }
+                console.log('combinedState', combinedState);
+                console.log('-----');
+                
                 return combinedState
             }, 
             {}, //Initial value for combinedState
@@ -34,22 +44,31 @@ class Toggle extends React.Component {
             const changesObject = typeof changes === 'function' ? changes(combinedState) : changes
             allChanges = changesObject
             const nonControlledChanges = Object.entries(changesObject).reduce((newChanges, [key, value]) => {
+/*                 console.log('====================================');
+                console.log('newChanges', newChanges);
+                console.log('[key, value]', [key, value]); */
                 if (!this.isControlled(key)) {
                     newChanges[key] = value
                 }
                 return newChanges
             }, {})
+/*             console.log('internal set state changes', nonControlledChanges)
+            console.log('Object.keys(nonControlledChanges).length ? nonControlledChanges : null', 
+                Object.keys(nonControlledChanges).length ? nonControlledChanges : null); */
 
             return Object.keys(nonControlledChanges).length ? nonControlledChanges : null
         }, 
         () => {
-            this.props.onStateChange(this.getState(allChanges), this.getState())
+            console.log('1. (allChanges)', allChanges);
+            console.log('this.getState(allChanges)', this.getState(allChanges));
+            
+            this.props.onStateChange(allChanges)//, this.getState())
             callback()
         })
     }
 
     toggle = () => {
-        this.setState(
+        this.internalSetState(
             ({on}) => ({on: !on}),
             () => {
                 this.props.onToggle(this.getState().on)
@@ -68,7 +87,9 @@ class Usage extends React.Component {
     state = { bothOn: false }
 
     handleStateChange = ({on}) => {
-        this.setState({bothOn: on})
+        this.setState({bothOn: on}, 
+            () => console.log('handlestatechange state value', this.state))
+        
     }
 
     render() {
