@@ -6,6 +6,12 @@ class Toggle extends React.Component {
         onToggle: () => {},
         onStateChange: () => {},
     }
+    static stateChangeTypes = {
+        toggleOn: '__toggle_on__',
+        toggleOff: '__toggle_off__',
+        toggle: '__toggle__',
+    }
+
     state = { on: false }
 
     isControlled(prop) {
@@ -33,7 +39,10 @@ class Toggle extends React.Component {
             const combinedState = this.getState(state)
             const changesObject = typeof changes === 'function' ? changes(combinedState) : changes
             allChanges = changesObject
-            const nonControlledChanges = Object.entries(changesObject).reduce((newChanges, [key, value]) => {
+            //Do this to avoid a rerender for a change in type
+            const {type: ignoredType, ...onlyChanges} = changesObject
+
+            const nonControlledChanges = Object.entries(onlyChanges).reduce((newChanges, [key, value]) => {
                 if (!this.isControlled(key)) {
                     newChanges[key] = value
                 }
@@ -43,33 +52,52 @@ class Toggle extends React.Component {
             return Object.keys(nonControlledChanges).length ? nonControlledChanges : null
         }, 
         () => {
-            this.props.onStateChange(allChanges)
+            this.props.onStateChange(allChanges, this.getState())
             callback()
         })
     }
 
-    toggle = () => {
+    toggle = ({on: newState, type}) => {
         this.internalSetState(
-            ({on}) => ({on: !on}),
+            ({on}) => {
+                return ({
+                    on: typeof newState === 'boolean' ? newState : !on,
+                    type,
+                })
+            },
             () => {
                 this.props.onToggle(this.getState().on)
             },
         )
     }
 
+    handleSwitchClick = () => this.toggle({type: Toggle.stateChangeTypes.toggle})
+    handleOffClick = () => this.toggle({on: false, type: Toggle.stateChangeTypes.toggleOff})
+    handleOnClick = () => this.toggle({on: true, type: Toggle.stateChangeTypes.toggleOn})
+
     render() {
         return (
-            <Switch on={this.getState().on} onClick={this.toggle} />
+            <div>
+                <Switch on={this.getState().on} onClick={this.handleSwitchClick} />
+                <button onClick={this.handleOffClick}>off</button>
+                <button onClick={this.handleOnClick}>on</button>
+            </div>            
         );
     }
 }
 
 class Usage extends React.Component {
     state = { bothOn: false }
+    lastWasButton = false
 
-    handleStateChange = ({on}) => {
-        this.setState({bothOn: on})
-        
+    handleStateChange = changes => {
+        const isButtonChange = changes.type === Toggle.stateChangeTypes.toggleOn || changes.type === Toggle.stateChangeTypes.toggleOff
+        if ((this.lastWasButton && isButtonChange) || changes.type === Toggle.stateChangeTypes.toggle) {
+            this.setState({bothOn: changes.on})
+            this.lastWasButton = false
+        } else {
+            this.lastWasButton = isButtonChange
+        }
     }
 
     render() {
@@ -88,10 +116,11 @@ export default Usage;
 
 
 /** 
- * Support Control Props for all state
+ * Improve the usability of Control Props with state change types
  */
 
 /**
- * Our current implementation of control props only supports controlling the state of a single item of state. 
- * Let's make our solution more generic to support any and all state of our component using Object.entries.
+ * Our onStateChange handler is great, but it's limited in capacity because we don't know why certain state is changing. 
+ * By adding stateChangeTypes to our component, it allows consumers of our component to have more insight into 
+ * how to respond to certain changes.
  */
