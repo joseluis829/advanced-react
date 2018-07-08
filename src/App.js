@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Usage from './components/16.jsx';
+import Usage from './components/17.jsx';
 //import { Toggle } from "./components/01.jsx";
 
 class App extends Component {
@@ -22,8 +22,8 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         {/*<Toggle onToggle={onToggle} />*/}
-        {/*Usage({onToggle})*/}
-        <Usage/>
+        {Usage({onToggle})}
+        {/*<Usage/>*/}
 
       </div>
     );
