@@ -1,10 +1,13 @@
 import React from 'react';
 import {Switch} from './switch'
-import { Utf8AsciiLatin1Encoding } from 'crypto';
+
+const ToggleContext = React.createContext({
+    on: false,
+    toggle: () => {},
+})
 
 class Toggle extends React.Component {
-    state = { on: false }
-
+    static Consumer = ToggleContext.Consumer
     toggle = () => {
         this.setState(
             ({on}) => ({on: !on}),
@@ -12,30 +15,41 @@ class Toggle extends React.Component {
         )
     }
 
+    state = { on: false, toggle: this.toggle }
+
     render() {
-        return this.props.children({
-            on: this.state.on,
-            toggle: this.toggle,
-        });
+        return <ToggleContext.Provider value={this.state} {...this.props} />
     }
 }
 
-const Layer1 = ({on, toggle}) => <Layer2 on={on} toggle={toggle} />
-const Layer2 = ({on, toggle}) => (
-    <React.Fragment>
-        {on ? 'The button is on' : 'The button is off'}
-        <Layer3 on={on} toggle={toggle} />
-    </React.Fragment>
+const Layer1 = () => <Layer2 />
+const Layer2 = () => (
+    <Toggle.Consumer>
+        {({on}) => (
+            <React.Fragment>
+                {on ? 'The button is on' : 'The button is off'}
+                <Layer3 />
+            </React.Fragment>
+        )}
+    </Toggle.Consumer>
+    
 )
-const Layer3 = ({on, toggle}) => <Layer4 on={on} toggle={toggle} />
-const Layer4 = ({on, toggle}) => <Switch on={on} onClick={toggle} />
+const Layer3 = () => <Layer4 />
+const Layer4 = () => (
+    <Toggle.Consumer>
+        {
+            ({on, toggle}) => <Switch on={on} onClick={toggle} />
+        }
+    </Toggle.Consumer>
+)
+
 
 function Usage({
     onToggle = (...args) => console.log('onToggle', ...args),
 }) {
     return(
         <Toggle onToggle={onToggle}>
-            {({on, toggle}) => <Layer1 on={on} toggle={toggle} /> }
+            <Layer1 />
         </Toggle>
     )
 }
