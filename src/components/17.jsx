@@ -55,3 +55,14 @@ function Usage({
 }
 
 export default Usage
+
+/**
+ * Implement the Provider Pattern with React Context
+ */
+
+ /**
+  * The prop drilling problem can be frustrating for data that changes over time and is needed throughout the application. 
+  * Luckily for us, we can use React's createContext API to make state (like on) and state updater functions (like toggle) 
+  * available anywhere in the tree. 
+  * In this lesson let's see how to side-step the prop drilling problem with a custom context provider and consumer.
+  */
