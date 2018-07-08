@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Usage from './components/17.jsx';
+import Usage from './components/18.jsx';
 //import { Toggle } from "./components/01.jsx";
 
 class App extends Component {

@@ -1,4 +1,5 @@
 import React from 'react';
+import hoistNonReactStatics from 'hoist-non-react-statics'
 import {Switch} from './switch'
 
 const ToggleContext = React.createContext({
@@ -22,26 +23,32 @@ class Toggle extends React.Component {
     }
 }
 
-const Layer1 = () => <Layer2 />
-const Layer2 = () => (
-    <Toggle.Consumer>
-        {({on}) => (
-            <React.Fragment>
-                {on ? 'The button is on' : 'The button is off'}
-                <Layer3 />
-            </React.Fragment>
-        )}
-    </Toggle.Consumer>
-    
-)
+function withToggle(Component) {
+    const Wrapper = (props, ref) => (
+        <Toggle.Consumer>
+            {
+                toggleContext => (<Component toggle={toggleContext} ref={ref} {...props} />)
+            }
+        </Toggle.Consumer>
+    )
+    Wrapper.displayName = `withToggle(${Component.displayName || Component.name})`
+    return hoistNonReactStatics(React.forwardRef(Wrapper), Component)
+}
+
+const myRef = React.createRef()
+const Layer1 = () => <Layer2  />
+const Layer2 = withToggle(function Layer2 ({toggle: {on}}) {
+    return (
+        <React.Fragment>
+            {on ? 'The button is on' : 'The button is off'}
+            <Layer3 />
+        </React.Fragment>
+    )
+} )
 const Layer3 = () => <Layer4 />
-const Layer4 = () => (
-    <Toggle.Consumer>
-        {
-            ({on, toggle}) => <Switch on={on} onClick={toggle} />
-        }
-    </Toggle.Consumer>
-)
+const Layer4 = withToggle(({toggle: {on, toggle}}) => (
+    <Switch on={on} onClick={toggle} />
+))
 
 function Usage({
     onToggle = (...args) => console.log('onToggle', ...args),
