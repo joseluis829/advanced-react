@@ -1,17 +1,17 @@
 import React from 'react';
 import hoistNonReactStatics from 'hoist-non-react-statics'
-import {Switch} from './switch'
+import { Switch } from './switch'
 
 const ToggleContext = React.createContext({
     on: false,
-    toggle: () => {},
+    toggle: () => { },
 })
 
 class Toggle extends React.Component {
     static Consumer = ToggleContext.Consumer
     toggle = () => {
         this.setState(
-            ({on}) => ({on: !on}),
+            ({ on }) => ({ on: !on }),
             () => this.props.onToggle(this.state.on),
         )
     }
@@ -36,24 +36,24 @@ function withToggle(Component) {
 }
 
 const myRef = React.createRef()
-const Layer1 = () => <Layer2  />
-const Layer2 = withToggle(function Layer2 ({toggle: {on}}) {
+const Layer1 = () => <Layer2 />
+const Layer2 = withToggle(function Layer2({ toggle: { on } }) {
     return (
         <React.Fragment>
             {on ? 'The button is on' : 'The button is off'}
             <Layer3 />
         </React.Fragment>
     )
-} )
+})
 const Layer3 = () => <Layer4 />
-const Layer4 = withToggle(({toggle: {on, toggle}}) => (
+const Layer4 = withToggle(({ toggle: { on, toggle } }) => (
     <Switch on={on} onClick={toggle} />
 ))
 
 function Usage({
     onToggle = (...args) => console.log('onToggle', ...args),
 }) {
-    return(
+    return (
         <Toggle onToggle={onToggle}>
             <Layer1 />
         </Toggle>
